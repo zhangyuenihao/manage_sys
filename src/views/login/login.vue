@@ -1,148 +1,114 @@
 <template>
-  <div class=warp>
+  <div class="warp">
     <div class="loginform">
       <h1>登录</h1>
-      <el-form :model="form" status-icon :rules="rules" ref="form" label-width="100px" class="demo-ruleForm">
+      <el-form
+        :model="form"
+        status-icon
+        :rules="rules"
+        ref="form"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
         <el-form-item label="用户名" prop="username">
           <el-input v-model="form.username"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="pass">
-          <el-input type="password" v-model="form.pass" auto-complete="off"></el-input>
+          <el-input
+            type="password"
+            v-model="form.pass"
+            auto-complete="off"
+            @keyup.native.enter="checkUser"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="verifycode">
+          <el-input
+            v-model="form.verifycode"
+            placeholder="请输入验证码"
+            class="identifyinput"
+          ></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('form')">登录</el-button>
+          <div class="identifybox">
+            <div @click="getLoginCode">
+              <div v-html="identifyCode"></div>
+            </div>
+            <el-button @click="getLoginCode" type="text" class="textbtn"
+            >看不清，换一张
+            </el-button>
+          </div>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="checkUser">登录</el-button>
           <el-button @click="resetForm('form')">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
-
   </div>
 </template>
 
 <script>
-
-
     export default {
-        name: 'login',
+        name: "login",
         data() {
             return {
                 form: {
-                    username: '',
-                    pass: ''
+                    username: "",
+                    pass: "",
+                    verifycode: ""
                 },
-                onOff: null,
+                identifyCode: "",
                 rules: {
                     username: [
-                        {required: true, message: '请输入用户名', trigger: 'blur'},
-                        /*{validator: this.validateusername, message: '用户名不存在', trigger: 'blur'}*/
+                        {required: true, message: "请输入用户名", trigger: "blur"}
                     ],
                     pass: [
-                        {required: true, message: '密码不能为空', trigger: 'blur'},
-                        {min: 6, max: 20, message: '密码长度6-20字符', trigger: 'blur'}
+                        {required: true, message: "密码不能为空", trigger: "blur"},
+                        {min: 6, max: 20, message: "密码长度6-20字符", trigger: "blur"}
+                    ],
+                    verifycode: [
+                        {required: true, message: "验证码不能为空", trigger: "blur"}
                     ]
                 }
-            }
+            };
         },
         methods: {
-            /**
-             * 表单效验检测用户名是否存在
-             * @param rule
-             * @param value
-             * @param callback
-             */
-            validateusername(rule, value, callback) {
-                if (value == '' || value == undefined || value == null) {
-                    callback();
-                } else {
-                    const exit = !this.getAllusername()
-                    if (!exit) {
-                        callback(new Error('用户名不存在'));
-                    } else {
-                        callback();
-                    }
-                }
-            },
-            validatecheck(rule, value, callback) {
-                if (value == '' || value == undefined || value == null) {
-                    callback();
-                }
-                if (!this.onOff) {
-                    callback(new Error('用户名密码不匹配'))
-                }
-                callback()
-            },
-
-
             /**
              * 检测用户名和密码是否匹配
              * @returns {Promise<AxiosResponse<any>>}
              */
             async checkUser() {
-                await this.$axios({
-                    method: 'get',
-                    url: '/api/user/login?uname=' + this.form.username + '&pwd=' + this.form.pass,
-                }).then(res => {
-                    if (res.data.length > 0) {
-                        res.data.some((item) => {
-                            if (item.uname && item.pwd && item.uname == this.form.username && item.pwd == this.form.pass) {
-                            }
-                        })
-                        this.onOff = true
-                    } else {
-                        this.onOff = false
-                    }
-                }).catch(err => {
-                    console.log(err)
-                })
-            },
-            /**
-             *
-             * @returns {Promise<AxiosResponse<any>>}
-             */
-            getAllusername() {
-                return this.$axios({
-                    method: 'get',
-                    url: '/api/user/login?uname=' + this.form.username,
-                }).then(res => {
-
-                    res.data.some((item) => {
-                        if (item.uname == this.form.username) {
-
-                        } else {
-                            console.log()
-                        }
-                    })
-
-                }).catch(err => {
-                    console.log(err)
-                })
-            },
-            submitForm(formName) {
-                this.checkUser().then(() => {
-                   this.rules.pass.push({validator: this.validatecheck,trigger:'blur'});
-                    this.$refs[formName].validate((valid) => {
-                        if (valid) {
-                            this.$router.push('/')
-                        } else {
-                            console.log('error submit!!');
-                            return false;
-                        }
+                const {username, pass, verifycode} = this.form;
+                try {
+                    await this.axios.post("user/login", {
+                        uname: username,
+                        pwd: pass,
+                        verifyCode: verifycode
                     });
-                })
+                    this.$router.push("/");
+                } catch (e) {
+                }
             },
             resetForm(formName) {
                 this.$refs[formName].resetFields();
+            },
+            /**
+             * 获取验证码
+             * @returns {Promise<void>}
+             */
+            async getLoginCode() {
+                const data = await this.axios.get("common/loginCode");
+                this.identifyCode = data;
             }
         },
         computed: {},
         created() {
-
+            this.getLoginCode();
         },
         mounted() {
-
         },
         components: {}
-    }
+    };
 </script>
 
 <style lang="scss" scoped>
@@ -165,5 +131,9 @@
 
   .el-form {
     padding-right: 50px;
+  }
+
+  .codeBox {
+    height: 100px;
   }
 </style>
