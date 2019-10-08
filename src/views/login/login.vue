@@ -85,7 +85,7 @@
                         pwd: pass,
                         verifyCode: verifycode
                     });
-                    this.$router.push("/");
+                    this.$router.push("/home");
                 } catch (e) {
                 }
             },

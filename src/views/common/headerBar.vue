@@ -1,6 +1,6 @@
 <template>
   <el-header
-    style="text-align: right; font-size: 12px;"
+    style="text-align: right; font-size: 12px; width: 100%;"
     background-color="#314057"
   >
     <el-dropdown>

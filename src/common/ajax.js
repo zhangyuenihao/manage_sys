@@ -9,7 +9,8 @@ import qs from "qs";
 import { Message } from "element-ui";
 const defaultConfig = {
   timeout: 10000,
-  baseURL: "http://192.168.1.211:7001/",
+  //baseURL: "http://192.168.1.211:7001/",
+  baseURL:"/api",
   responseType: "json",
   withCredentials: true, // 是否允许带cookie这些
   headers: {
