@@ -1,25 +1,12 @@
 <template>
   <div class="warp">
-    <el-container style="height:100%; border: 1px solid #eee">
-      <el-header style="background:#314057 ">xxx后台管理系统</el-header>
-      <el-container>
-        <side-bar :menus="dataList.menus"></side-bar>
-        <el-container style="width: 100%">
-          <header-bar :user="dataList.user" ></header-bar>
-          <el-main>
-            <el-table :data="dataList">
+   首页
 
-            </el-table>
-          </el-main>
-        </el-container>
-      </el-container>
-    </el-container>
   </div>
 </template>
 
 <script>
-import sideBar from "./common/sideBar";
-import headerBar from "./common/headerBar";
+
 export default {
   name: "Home",
   data() {
@@ -29,21 +16,11 @@ export default {
       address: "上海市普陀区金沙江路 1518 弄"
     };
     return {
-      dataList: {},
-        userList:{}
+
     };
   },
   methods: {
-    async getUser() {
-      const data = await this.axios.get("user/info");
-      this.dataList = data;
-      console.log(data)
-    },
-    async getAlluser(){
-        const data = await this.axios.get("user/userList");
-        this.userList = data;
-        console.log(data)
-    }
+
   },
   computed: {},
   created() {
@@ -52,7 +29,7 @@ export default {
   },
   mounted() {
   },
-  components: { headerBar, sideBar }
+  components: {  }
 };
 </script>
 
